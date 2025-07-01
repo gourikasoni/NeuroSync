@@ -1,0 +1,156 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-ring: var(--ring);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 1.25rem;
+
+  /* 🎨 Pastel Playful Aesthetic */
+  --background: #fdf9f3;
+  --foreground: #2b2b2b;
+
+  --card: #ffffff;
+  --card-foreground: #2b2b2b;
+
+  --primary: #c7afea; /* lavender */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f6a6b2; /* soft pink */
+  --secondary-foreground: #2b2b2b;
+
+  --accent: #a6d3f2; /* soft blue */
+  --accent-foreground: #2b2b2b;
+
+  --highlight: #b8e0d2; /* pastel mint */
+
+  --muted: #e8e8e8;
+  --muted-foreground: #7b7b7b;
+
+  --destructive: #ef4444;
+  --border: rgba(0, 0, 0, 0.05);
+  --input: rgba(0, 0, 0, 0.05);
+  --ring: #c7afea;
+
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --background: #2c2c2c;
+  --foreground: #f3efe7;
+
+  --card: #3c3c3c;
+  --card-foreground: #f3efe7;
+  --popover: #3c3c3c;
+  --popover-foreground: #f3efe7;
+
+  --primary: #b790be;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f9c88f;
+  --secondary-foreground: #2c2c2c;
+
+  --accent: #9ac6b5;
+  --accent-foreground: #2c2c2c;
+
+  --muted: #676767;
+  --muted-foreground: #d8e8e1;
+
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #b790be;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Animations */
+@keyframes scanline {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes slow-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-scanline {
+  animation: scanline 8s linear infinite;
+}
+
+.animate-slow-spin {
+  animation: slow-spin 12s linear infinite;
+}
+
+@keyframes sound-wave {
+  0% {
+    height: 10%;
+  }
+  50% {
+    height: 100%;
+  }
+  100% {
+    height: 10%;
+  }
+}
+
+.animate-sound-wave {
+  animation: sound-wave 1.2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
