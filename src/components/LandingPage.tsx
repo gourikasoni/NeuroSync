@@ -12,9 +12,17 @@ export default function LandingPage() {
     <main className="min-h-screen relative overflow-hidden bg-[#fdf9f3]">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 text-[#f9c88f] animate-bounce">
-          <Heart className="w-6 h-6" />
-        </div>
+        {/* Floating Heart + Badge side by side */}
+        {/* Floating Heart + Badge side by side */}
+<div className="absolute top-20 left-10 flex items-center gap-2 animate-bounce">
+  <Heart className="w-6 h-6 text-[#f9c88f]" />
+  <div className="bg-white/60 backdrop-blur-sm text-[#7c9f87] text-xs px-3 py-1 rounded-full border border-[#cde4d6] shadow-sm font-medium">
+    Your Mental Wellness Journey
+  </div>
+</div>
+
+
+
         <div className="absolute top-40 right-20 text-[#d88bde] animate-pulse">
           <Sparkles className="w-8 h-8" />
         </div>
@@ -36,20 +44,18 @@ export default function LandingPage() {
             
             {/* LEFT SIDE - TEXT */}
             <div className="space-y-8 text-center lg:text-left order-2 lg:order-1">
-              {/* Badge */}
-              <div className="inline-flex items-right gap-2 bg-[#fff5f7] rounded-full px-4 py-2 text-sm font-medium text-[#b790be] border border-[#eeddf2] shadow-sm">
-                <Sparkles className="w-4 h-4" />
-                Your Mental Wellness Journey
-              </div>
+              {/* Spacer to avoid overlap with floating badge */}
+<div className="h-20 sm:h-3 lg:h-11"></div>
+
 
               {/* Main Heading */}
               <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2c2c2c] leading-tight">
-                  Take Care Of{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b790be] to-[#f47c7c]">
-                    Your Mental Health
-                  </span>
-                </h1>
+                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+  <span className="text-[#676767]">Soft Brains. </span>
+  <span className="text-[#9e7bb5]">Loud Feelings. </span>
+  <span className="text-[#cc859a]">Welcome to NeuroSync.</span>
+</h1>
+
                 <div className="flex justify-center lg:justify-start">
                   <div className="w-20 h-1 bg-gradient-to-r from-[#d88bde] to-[#f9c88f] rounded-full"></div>
                 </div>
@@ -57,7 +63,8 @@ export default function LandingPage() {
 
               {/* Subtitle */}
               <p className="text-lg lg:text-xl text-[#676767] leading-relaxed max-w-lg mx-auto lg:mx-0">
-                NeuroSync helps you reflect, journal, and grow. Track your emotions and let AI help you heal 🌱
+               Journal the chaos, track your vibes, cry if needed   NeuroSync got you 🌷
+
               </p>
 
               {/* Features List */}
@@ -78,16 +85,18 @@ export default function LandingPage() {
 
               {/* CTA Button */}
               <div className="space-y-4">
-                <Button
-                  className="group relative rounded-full px-8 py-6 text-lg font-semibold bg-gradient-to-r from-[#d4a0dd] to-[#f8e0b1] hover:from-[#b68dc2] hover:to-[#daaad8] text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border-0"
-                  onClick={() => router.push('/dashboard')}
-                >
-                  <span className="flex items-center gap-2">
-                    Start Your Journey
-                    <span className="group-hover:translate-x-1 transition-transform duration-300">🚀</span>
-                  </span>
-                </Button>
-                <p className="text-sm text-[#888]">Free to start • No credit card required</p>
+                     <Button
+  className="group relative rounded-full px-8 py-5 text-base font-semibold text-[#646363] bg-gradient-to-r from-[#d6dfcb] to-[#8fad87] hover:from-[#8fad87] hover:to-[#d6dfcb] shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+  onClick={() => router.push('/dashboard')}
+>
+  <span className="flex items-center gap-2">
+    Start Your Journey
+    <span className="group-hover:translate-x-1 transition-transform duration-300">✨</span>
+  </span>
+</Button>
+
+
+                <p className="text-sm text-[#888]">Free to start • </p>
               </div>
             </div>
 
@@ -101,7 +110,7 @@ export default function LandingPage() {
                 {/* Main image container */}
                 <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-2xl border border-white/50">
                   <Image
-                    src="/brain-Illustration.png"
+                    src="/brain-cute.png"
                     alt="Cute Brain Illustration"
                     width={400}
                     height={400}
