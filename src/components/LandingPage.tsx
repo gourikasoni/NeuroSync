@@ -9,17 +9,21 @@ export default function LandingPage() {
   const router = useRouter();
 
   return (
+    <>
     <main className="min-h-screen relative overflow-hidden bg-[#fdf9f3]">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating Heart + Badge side by side */}
-        {/* Floating Heart + Badge side by side */}
-<div className="absolute top-20 left-10 flex items-center gap-2 animate-bounce">
+        
+ {/* Responsive Floating Badge with Z-Index Fix */}
+<div className="absolute top-20 left-10 z-20 flex items-center gap-2 animate-bounce
+                max-sm:top-[90%] max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:flex-col max-sm:gap-1 max-sm:animate-none">
   <Heart className="w-6 h-6 text-[#f9c88f]" />
   <div className="bg-white/60 backdrop-blur-sm text-[#7c9f87] text-xs px-3 py-1 rounded-full border border-[#cde4d6] shadow-sm font-medium">
     Your Mental Wellness Journey
   </div>
 </div>
+
+
 
 
 
@@ -77,7 +81,7 @@ export default function LandingPage() {
                   <Star className="w-4 h-4" />
                   AI Insights
                 </div>
-                <div className="flex items-center gap-2 bg-[#fbe4e4] rounded-full px-3 py-2 text-[#f9c88f]">
+                <div className="flex items-center gap-2 bg-[#fbe4e4] rounded-full px-3 py-2 text-[#ffbe74]">
                   <Moon className="w-4 h-4" />
                   Daily Reflection
                 </div>
@@ -136,5 +140,59 @@ export default function LandingPage() {
       {/* Bottom decorative wave */}
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white/30 to-transparent backdrop-blur-sm"></div>
     </main>
+    {/* 🌸 Feature Highlights */}
+<section className="relative z-10 bg-[#fcf8f2] py-16 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-6xl mx-auto text-center space-y-12">
+    <h2 className="text-3xl sm:text-4xl font-bold text-[#67486e]">
+  How NeuroSync Works ✨
+</h2>
+
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left items-stretch">
+      
+      {/* Feature 1 */}
+      <div className="bg-white rounded-2xl shadow-md border border-[#f5e7ef] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+        <div className="text-xl font-semibold text-[#806783]">🧠 Step 1: Feel It</div>      
+        <h3 className="text-lg font-semibold text-[#b790be]">Mood Check-ins</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Choose an emoji, rate your mood — even if you don’t know what you’re feeling yet.
+        </p>
+      </div>
+
+      {/* Feature 2 */}
+      <div className="bg-white rounded-2xl shadow-md border border-[#e1f1ed] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+        <div className="text-xl font-semibold text-[#806783]">🎙 Step 2: Let It Out</div>
+        <h3 className="text-lg font-semibold text-[#9ac6b5]">Voice Journaling</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Too tired to type? Just talk. We'll transcribe your chaos into calm.
+        </p>
+      </div>
+
+      {/* Feature 3 */}
+      <div className="bg-white rounded-2xl shadow-md border border-[#fbe4e4] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+        <div className="text-xl font-semibold text-[#806783]">🤖 Step 3: Reflect</div>
+        <h3 className="text-lg font-semibold text-[#f9c88f]">AI Feedback</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">
+          Our AI gently reads between the lines to spot patterns, stress, and more.
+        </p>
+      </div>
+
+      {/* Feature 4 */}
+<div className="bg-white rounded-2xl shadow-md border border-[#f0f0f0] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+  <div className="text-xl font-semibold text-[#806783]">💬 Coming Soon</div>
+  <h3 className="text-lg font-semibold text-[#85a7ba]">AI Support Chat</h3>
+  <p className="text-sm text-gray-500 leading-relaxed">
+    A friendly chat assistant to guide your self-care. In the works!
+  </p>
+</div>
+
+
+    </div>
+  </div>
+</section>
+
+
+
+</>
+    
   );
 }

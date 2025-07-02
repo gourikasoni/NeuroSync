@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/shared/Header";
+import Footer from '@/components/shared/Footer';
 import "../styles/global.css";
 
 const geistSans = Geist({
@@ -33,6 +34,7 @@ export default function RootLayout({
           <>
             <Header />
             <main className="min-h-screen w-full">{children}</main>
+            <Footer />
           </>
         </body>
       </html>
