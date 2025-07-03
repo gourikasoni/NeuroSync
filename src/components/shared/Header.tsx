@@ -57,7 +57,7 @@ export default function Header() {
     className="border border-pink-300 text-pink-500 hover:bg-pink-50 hover:shadow-sm rounded-full text-sm px-4 py-2 transition"
     asChild
   >
-    <Link href="/auth/sign-in">Sign In</Link>
+    <Link href="/sign-in">Sign In</Link>
   </Button>
 
   {/* Sign Up - pastel gradient filled button */}
@@ -65,7 +65,7 @@ export default function Header() {
     className="bg-gradient-to-r from-[#F79BD3] to-[#B5B9F8] text-white font-semibold hover:opacity-90 shadow-md rounded-full text-sm px-4 py-2 transition"
     asChild
   >
-    <Link href="/auth/sign-up">Sign Up</Link>
+    <Link href="/sign-up">Sign Up</Link>
   </Button>
 </SignedOut>
 
