@@ -1,34 +1,27 @@
-// hooks/useJournal.ts
-'use client';
+'use server';
 
-import { useAuth } from '@clerk/nextjs';
-import { createSupabaseWithToken } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
+import { currentUser } from '@clerk/nextjs/server';
 
-export const useJournal = () => {
-  const { getToken } = useAuth();
+export async function addJournalEntry(content: string, mood: string) {
+  const user = await currentUser();
 
-  const addJournalEntry = async (content: string, mood: string) => {
-    const token = await getToken({ template: 'supabase' });
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
 
-    if (!token) {
-      throw new Error("User is not authenticated.");
-    }
-
-    // ✅ Create a client with the Clerk token attached
-    const supabase = createSupabaseWithToken(token);
-
-    const { error } = await supabase.from('journal_entries').insert({
+  const { data, error } = await supabase.from('journal_entries').insert([
+    {
+      user_id: user.id, // manual user_id (text)
       content,
       mood,
-    });
+    },
+  ]);
 
-    if (error) {
-      console.error('Supabase insert error:', error.message);
-      throw error;
-    }
+  if (error) {
+    console.error('Insert error:', error.message);
+    throw new Error(error.message);
+  }
 
-    console.log('✅ Journal entry saved!');
-  };
-
-  return { addJournalEntry };
-};
+  return data;
+}
