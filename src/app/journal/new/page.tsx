@@ -5,18 +5,6 @@ import { Sparkles, Heart, Flower, Star, Sun, Cloud, Smile, Zap } from 'lucide-re
 import { useUser } from '@clerk/nextjs';
 import { addJournalEntry } from '@/lib/actions/addJournalEntry';
 
-const positiveAffirmations = [
-  "You are enough 💕",
-  "This feeling will pass 🌙",
-  "You're doing great 🌟",
-  "Be kind to yourself 🌸",
-  "You are loved 💖",
-  "Progress over perfection ✨",
-  "Your feelings are valid 🦋",
-  "You're stronger than you know 💪",
-  "Take it one breath at a time 🌿",
-  "You matter 🌺"
-];
 
 export default function NewJournalPage() {
   const { user } = useUser();
@@ -27,6 +15,8 @@ export default function NewJournalPage() {
   const [message, setMessage] = useState('');
   const [hoveredMood, setHoveredMood] = useState('');
   const [randomAffirmation, setRandomAffirmation] = useState('');
+  const [aiSummary, setAISummary] = useState('');
+
 
   useEffect(() => {
     const random = positiveAffirmations[Math.floor(Math.random() * positiveAffirmations.length)];
@@ -40,10 +30,16 @@ export default function NewJournalPage() {
     setMessage('');
 
     try {
-      await addJournalEntry(content, mood);
-      setMessage('✨ Your feelings are valid and beautiful! Journal saved 💖');
-      setContent('');
-      setMood('');
+      const saved = await addJournalEntry(content, mood);
+if (saved && saved[0]?.ai_summary) {
+  setMessage('✨ Journal saved! Here’s what your AI buddy thinks 💬');
+  setAISummary(saved[0].ai_summary);
+} else {
+  setMessage('✨ Your feelings are valid and beautiful! Journal saved 💖');
+}
+setContent('');
+setMood('');
+
     } catch (error) {
       console.error(error);
       setMessage('❌ Failed to save journal.');
@@ -60,7 +56,7 @@ export default function NewJournalPage() {
     { emoji: '😴', label: 'Tired', color: 'bg-slate-50 border-slate-200', hoverColor: 'hover:bg-slate-100 hover:border-slate-300' },
     { emoji: '🤗', label: 'Grateful', color: 'bg-pink-50 border-pink-200', hoverColor: 'hover:bg-pink-100 hover:border-pink-300' },
     { emoji: '😌', label: 'Peaceful', color: 'bg-green-50 border-green-200', hoverColor: 'hover:bg-green-100 hover:border-green-300' },
-    { emoji: '🥺', label: 'Overwhelmed', color: 'bg-orange-50 border-orange-200', hoverColor: 'hover:bg-orange-100 hover:border-orange-300' }
+    { emoji: '🥺', label: 'Wrecked', color: 'bg-orange-50 border-orange-200', hoverColor: 'hover:bg-orange-100 hover:border-orange-300' }
   ];
 
   const positiveAffirmations = [
@@ -222,12 +218,27 @@ export default function NewJournalPage() {
               </button>
 
               {/* Status Message */}
-              {message && (
-                <div className="text-center p-4 rounded-2xl border  bg-[#b8e0d2] border-[#a6d3f2]">
-                  <Zap className="w-5 h-5 mx-auto mb-2 text-gray-700" />
-                  <p className="font-medium text-gray-700">{message}</p>
-                </div>
-              )}
+       {/* 🌈 AI Mood Summary */}
+{aiSummary && (
+  <>
+    <div className="my-6 border-t border-[#d4c0ea]"></div> {/* Divider */}
+
+    <div className="p-6 rounded-3xl border shadow-2xl animate-fade-in-up bg-gradient-to-br from-[#fcefee] to-[#f5f0fa] border-[#e1c8f7] text-[#4a3554] backdrop-blur-md">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg sm:text-xl font-bold tracking-wide">
+          Ok bestie, here’s the vibe check 💖
+        </h2>
+        
+      </div>
+      <p className="whitespace-pre-line text-sm sm:text-base leading-relaxed font-medium">
+        {aiSummary}
+      </p>
+    </div>
+  </>
+)}
+
+                
+            
             </div>
           </div>
         </form>
