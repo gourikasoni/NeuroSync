@@ -1,14 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
-import { getJournalsByDate } from '@/lib/actions/getJournalsByDate';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { DayPicker } from "react-day-picker";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { Sparkles } from "lucide-react";
+import "react-day-picker/dist/style.css";
+import { getJournalsByDate } from "@/lib/actions/getJournalsByDate";
+import FloatingDoodles from "@/components/FloatingDoodles";
 
 
-// ✅ Define JournalEntry type (if not globally available)
+// ✅ Define JournalEntry type
 type JournalEntry = {
   id: string;
   created_at: string;
@@ -20,13 +22,12 @@ type JournalEntry = {
 
 export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [entries, setEntries] = useState<JournalEntry[]>([]); // ✅ Fixed typing here
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
 
   useEffect(() => {
     const fetchEntries = async () => {
       if (!selectedDate) return;
-
-      const formatted = format(selectedDate, 'yyyy-MM-dd');
+      const formatted = format(selectedDate, "yyyy-MM-dd");
       const res = await getJournalsByDate(formatted);
       setEntries(res || []);
     };
@@ -34,10 +35,50 @@ export default function CalendarPage() {
     fetchEntries();
   }, [selectedDate]);
 
+  // 👇 Dynamic animation CSS
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes pulse-fade {
+        0% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.1); }
+        100% { opacity: 0.4; transform: scale(1); }
+      }
+
+      .animate-pulse-slow {
+        animation: pulse-fade 4s ease-in-out infinite;
+      }
+
+      .animate-pulse-slower {
+        animation: pulse-fade 6s ease-in-out infinite;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}, []);
+
+
   return (
-    <main className="min-h-screen bg-[#fdf9f3] py-10 px-4">
+    <motion.main
+  initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, ease: "easeOut" }}
+  className="relative min-h-screen bg-[#fdf9f3] py-10 px-4"
+>
+
+      {/* 🌈 Animated background doodles */}
+      {/* 🌸 Scattered Floating Doodles */}
+
+
+
+<FloatingDoodles />
+
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-6 text-[#815690]">📅 My Journal Calendar</h1>
+        <div className="relative inline-block">
+          <h1 className="text-3xl font-bold text-center mb-6 text-[#815690]">📅 My Journal Calendar</h1>
+          <Sparkles className="absolute -top-2 -right-6 text-[#f6a6b2] animate-ping-slow w-6 h-6" />
+        </div>
 
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <DayPicker
@@ -45,6 +86,19 @@ export default function CalendarPage() {
             selected={selectedDate}
             onSelect={setSelectedDate}
             className="mx-auto"
+            classNames={{
+              caption: "text-[#815690] font-bold text-xl",
+              nav_button: "text-[#815690] hover:bg-[#fcefee] rounded-full p-1",
+              table: "w-full border-spacing-2",
+              head_row: "text-[#a37cb4]",
+              head_cell: "text-sm font-semibold text-center",
+              row: "text-center",
+              cell: "w-10 h-10 text-center text-sm rounded-full transition-all duration-300", // ← ⭕ made it a circle
+              day: "hover:bg-[#f6a6b2]/20 text-[#5e3d67] rounded-full",
+              day_selected: "bg-[#eac2d2] text-white font-bold",
+              day_today: "border border-[#f6a6b2]",
+              day_disabled: "text-gray-300",
+            }}
           />
         </div>
 
@@ -74,6 +128,6 @@ export default function CalendarPage() {
           )}
         </div>
       </div>
-    </main>
+    </motion.main>
   );
 }
