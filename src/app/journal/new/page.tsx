@@ -5,6 +5,12 @@ import { Sparkles, Heart, Flower, Star, Sun, Cloud, Smile, Zap } from 'lucide-re
 import { useUser } from '@clerk/nextjs';
 import { addJournalEntry } from '@/lib/actions/addJournalEntry';
 
+// ✅ Setup SpeechRecognition class safely (only if window exists)
+let SpeechRecognitionClass: any = null;
+if (typeof window !== 'undefined') {
+  SpeechRecognitionClass =
+    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+}
 
 export default function NewJournalPage() {
   const { user } = useUser();
@@ -16,6 +22,62 @@ export default function NewJournalPage() {
   const [hoveredMood, setHoveredMood] = useState('');
   const [randomAffirmation, setRandomAffirmation] = useState('');
   const [aiSummary, setAISummary] = useState('');
+  const [mode, setMode] = useState<'text' | 'voice'>('text');
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState('');
+
+  useEffect(() => {
+    if (mode !== 'voice') return;
+
+    let recognition: any;
+
+    const startRecognition = () => {
+      if (!SpeechRecognitionClass) {
+        alert('Speech Recognition is not supported in this browser 😢');
+        return;
+      }
+
+      recognition = new SpeechRecognitionClass();
+      recognition.lang = 'en-US';
+      recognition.interimResults = true;
+      recognition.continuous = true;
+
+      recognition.onresult = (e: any) => {
+        const newTranscript = Array.from(e.results)
+          .map((result: any) => result[0].transcript)
+          .join('');
+        setTranscript(newTranscript);
+      };
+
+      recognition.onerror = (e: any) => {
+        console.error('Speech recognition error:', e);
+        setIsRecording(false);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognition.start();
+      setIsRecording(true);
+    };
+
+    const stopRecognition = () => {
+      if (recognition) {
+        recognition.stop();
+        setIsRecording(false);
+      }
+    };
+
+    if (isRecording) {
+      startRecognition();
+    } else {
+      stopRecognition();
+    }
+
+    return () => stopRecognition();
+  }, [isRecording, mode]);
+
 
 
   useEffect(() => {
@@ -24,29 +86,37 @@ export default function NewJournalPage() {
   }, []);
 
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage('');
+  setAISummary('');
 
-    try {
-      const saved = await addJournalEntry(content, mood);
-if (saved && saved[0]?.ai_summary) {
+  try {
+    const journalText = mode === 'voice' ? transcript : content;
+const saved = await addJournalEntry(journalText, mood);
+
+
+if (saved?.ai_summary) {
   setMessage('✨ Journal saved! Here’s what your AI buddy thinks 💬');
-  setAISummary(saved[0].ai_summary);
+  setAISummary(saved.ai_summary);
 } else {
-  setMessage('✨ Your feelings are valid and beautiful! Journal saved 💖');
+  setMessage('✨ Journal saved! But AI summary could not be generated 🛠️');
+  setAISummary('Sorry bestie, AI couldn’t analyze this right now. Try again later 💔');
 }
-setContent('');
-setMood('');
 
-    } catch (error) {
-      console.error(error);
-      setMessage('❌ Failed to save journal.');
-    }
 
-    setLoading(false);
-  };
+    // Clear inputs *after* successful handling
+    setContent('');
+    setMood('');
+  } catch (error) {
+    console.error('❌ Journal saving failed:', error);
+    setMessage('❌ Failed to save your journal. Please try again later.');
+    setAISummary('');
+  }
+
+  setLoading(false);
+};
 
   const moods = [
     { emoji: '😊', label: 'Happy', color: 'bg-yellow-50 border-yellow-200', hoverColor: 'hover:bg-yellow-100 hover:border-yellow-300' },
@@ -134,6 +204,31 @@ setMood('');
           </h1>
           <p className="text-lg font-medium text-gray-500">Your feelings matter. Let's explore them together 🌸</p>
         </div>
+        <div className="flex justify-center mb-6 gap-4">
+  <button
+    type="button"
+    onClick={() => setMode('text')}
+    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow ${
+      mode === 'text'
+        ? 'bg-[#c7afea] text-white shadow-md'
+        : 'bg-white border border-[#c7afea] text-[#c7afea]'
+    }`}
+  >
+    ✍️ Text Journal
+  </button>
+  <button
+    type="button"
+    onClick={() => setMode('voice')}
+    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow ${
+      mode === 'voice'
+        ? 'bg-[#f6a6b2] text-white shadow-md'
+        : 'bg-white border border-[#f6a6b2] text-[#f6a6b2]'
+    }`}
+  >
+    🎙️ Voice Journal
+  </button>
+</div>
+
 
         {/* 🌻 Journal Card */}
         <form onSubmit={handleSubmit}>
@@ -186,13 +281,30 @@ setMood('');
                 <label className="block text-lg font-semibold mb-4 text-center text-gray-700">
                   Pour your heart out 💭
                 </label>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder="Dear self, today I'm feeling... and that's okay."
-                  className="w-full p-6 rounded-2xl border-2 border-[#c7afea] bg-white/70 shadow-inner resize-none h-48 text-gray-700"
-                  required
-                />
+                {mode === 'text' ? (
+  <textarea
+    value={content}
+    onChange={(e) => setContent(e.target.value)}
+    placeholder="Dear self, today I'm feeling... and that's okay."
+    className="w-full p-6 rounded-2xl border-2 border-[#c7afea] bg-white/70 shadow-inner resize-none h-48 text-gray-700"
+    required
+  />
+) : (
+  <div className="bg-white/70 border-2 border-[#f6a6b2] p-6 rounded-2xl text-gray-700 h-48 relative">
+    <p className="text-sm mb-2">🎤 Speak your heart out...</p>
+    <div className="text-base whitespace-pre-line">{transcript || '...'}</div>
+    <button
+      type="button"
+      onClick={() => setIsRecording((prev) => !prev)}
+      className={`absolute bottom-4 right-4 px-4 py-2 rounded-full shadow-md text-white text-sm font-semibold transition-all ${
+        isRecording ? 'bg-red-500' : 'bg-[#f6a6b2]'
+      }`}
+    >
+      {isRecording ? 'Stop' : 'Start'} Recording
+    </button>
+  </div>
+)}
+
               </div>
 
               {/* Random Affirmation */}
@@ -219,6 +331,12 @@ setMood('');
 
               {/* Status Message */}
        {/* 🌈 AI Mood Summary */}
+       {message && (
+  <div className="text-center mt-4 text-sm text-[#885f95] font-medium animate-fade-in">
+    {message}
+  </div>
+)}
+
 {aiSummary && (
   <>
     <div className="my-6 border-t border-[#d4c0ea]"></div> {/* Divider */}
