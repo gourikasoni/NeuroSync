@@ -20,12 +20,6 @@ import {
 } from "recharts";
 
 import { supabase } from "@/lib/supabaseClient";
-import { Tooltip as ReactTooltip } from "react-tooltip";
-import "react-tooltip/dist/react-tooltip.css";
-
-import CalendarHeatmap from "react-calendar-heatmap";
-import "react-calendar-heatmap/dist/styles.css";
-import { getHeatmapData } from "@/lib/utils/getHeatmapData";
 
 import { getMoodFrequency } from "@/lib/utils/getMoodFrequency";
 import { getEmotionalDepth } from "@/lib/utils/getEmotionalDepth";
@@ -40,7 +34,8 @@ const MoodTrendsPage = () => {
   const [archetype, setArchetype] = useState<any>(null);
   const [moodTimeMap, setMoodTimeMap] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [heatmapData, setHeatmapData] = useState<any[]>([]);
+  const [barSize, setBarSize] = useState(40);
+
 
   const [range, setRange] = useState<"7d" | "30d" | "all">("7d");
 
@@ -52,8 +47,6 @@ const MoodTrendsPage = () => {
         .from("journal_entries")
         .select("created_at, ai_summary")
         .eq("user_id", user.id);
-//const legacyHeatmap = getHeatmapData(entries || []);
-    //  setHeatmapData(legacyHeatmap);
 
       const depth = getEmotionalDepth(entries || []);
       setDepthScore(depth);
@@ -81,50 +74,36 @@ const MoodTrendsPage = () => {
         setArchetype(null);
       }
 
-    // ✅ Mood Heatmap Data
-const res1 = await fetch(`/api/mood-heatmap?user_id=${user.id}`);
-const apiData = await res1.json();
-console.log("🔥 Mood Heatmap API Data:", apiData);
-
-
-const mappedHeatmap = apiData.map((item: any) => {
-  const moods: Record<string, number> = {}; // ✅ declare inside map callback
-
-  if (item.tooltip && typeof item.tooltip === "string") {
-    item.tooltip.split(", ").forEach((pair: string) => {
-      const [emoji, count] = pair.split(": ");
-      if (emoji && count) {
-        moods[emoji] = parseInt(count);
-      }
-    });
-  }
-
-  return {
-    date: item.date,
-    count: item.count,
-    mostFrequentMood: item.mood,
-    moods, // ✅ this is now scoped per object
-  };
-});
-
-
-setHeatmapData(mappedHeatmap);
-
-
-// ✅ Mood Time Map (Pie Chart)
-const res2 = await fetch("/api/mood-time-map");
-const moodMap = await res2.json();
-console.log("✅ Mood Time Map:", moodMap);
-setMoodTimeMap(moodMap);
-
-
+      const res2 = await fetch("/api/mood-time-map");
+      const moodMap = await res2.json();
+      setMoodTimeMap(moodMap);
 
       setLoading(false);
     };
 
     fetchMoodData();
+     if (typeof window !== 'undefined') {
+    const isMobile = window.innerWidth < 640;
+    setBarSize(isMobile ? 20 : 40);
+  }
   }, [user, range]);
-  console.log("📆 Final Heatmap Values:", heatmapData);
+  const CustomTick = ({ x, y, payload }: any) => {
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={16}
+      textAnchor="end"
+      transform={`rotate(-30, ${x}, ${y})`}
+      fill="#5f3a5d"
+      fontSize={11}
+      fontWeight={600}
+    >
+      {payload.value}
+    </text>
+  );
+};
+
 
   return loading ? (
     <div className="min-h-screen flex items-center justify-center text-[#815690]">
@@ -149,12 +128,10 @@ setMoodTimeMap(moodMap);
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            
             className="text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-[#815690] to-[#e5b5e7]"
->
-             Here’s what your heart’s been saying lately 
+          >
+            Here’s what your heart’s been saying lately
           </motion.h1>
-          
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -243,27 +220,45 @@ setMoodTimeMap(moodMap);
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
-            className="bg-white/50 border rounded-2xl p-6"
-          >
-            <h3 className="text-lg font-semibold mb-4">📊 Mood Frequency</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={moodData} barSize={40}>
-                <XAxis dataKey="label" tick={{ fill: "#5f3a5d" }} />
-                <YAxis allowDecimals={false} tick={{ fill: "#5f3a5d" }} />
-                <Tooltip />
-                <Bar dataKey="count" radius={[10, 10, 0, 0]}>
-                  {moodData.map((entry, index) => (
-                    <Cell key={`bar-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </motion.div>
+                  {/* Bar Chart Enhancements */}
+         <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.7 }}
+          className="rounded-[2rem] backdrop-blur-xl border border-[#f0e1f7] bg-white/60 shadow-[0_0_40px_rgba(255,230,255,0.3)] p-6"
+        >
+          <h3 className="text-xl font-semibold mb-4 text-[#6c2a73] flex items-center gap-2">
+            <span className="text-2xl">📊</span> <span>Mood Frequency</span>
+          </h3>
+          <div className="min-w-0"></div>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart
+  data={moodData}
+  barSize={barSize}
+  margin={{ top: 20, right: 30, left: 30, bottom: 50 }}
+>
 
+             <XAxis dataKey="label" tick={<CustomTick />}  interval={0}/>
+
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: "#815690", fontSize: 12 }}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "#fff0f7",
+                  border: "1px solid #e7bce3",
+                  borderRadius: "10px",
+                }}
+              />
+              <Bar dataKey="count" radius={[12, 12, 0, 0]}>
+                {moodData.map((entry, index) => (
+                  <Cell key={`bar-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -329,45 +324,6 @@ setMoodTimeMap(moodMap);
             </LineChart>
           </ResponsiveContainer>
         </div>
-
-        {/* Mood Heatmap */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
-          className="bg-white/50 border rounded-2xl p-6"
-        >
-          <h3 className="text-lg font-semibold mb-4">📆 Mood Heatmap</h3>
-          <CalendarHeatmap
-  startDate={new Date(new Date().setMonth(new Date().getMonth() - 5))}
-  endDate={new Date()}
-  values={heatmapData}
-  showWeekdayLabels
-
-  tooltipDataAttrs={(value: any) => {
-    if (!value || !value.moods) return {};
-    const tooltipText = Object.entries(value.moods)
-      .map(([mood, count]) => `${mood}: ${count}`)
-      .join(', ');
-    return {
-      'data-tip': tooltipText,
-    } as React.HTMLAttributes<SVGElement>;
-  }}
- classForValue={(value: any) => {
-  if (!value || !value.mostFrequentMood) return 'color-empty';
-
-  const mood = moodMeta.find((m) => m.emoji === value.mostFrequentMood);
-  if (!mood) return 'color-empty';
-
-  return `color-${mood.label.toLowerCase()}`;
-}}
-
-
-
-/>
-
-          <ReactTooltip className="!bg-[#fff0f6] !text-[#5f3a5d] !rounded-xl !px-3 !py-2 !text-xs !font-medium !shadow-xl" />
-        </motion.div>
       </div>
     </motion.main>
   );

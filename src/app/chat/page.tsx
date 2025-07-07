@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import ClientOnly from '@/components/ClientOnly';
+import { Heart, Sparkles, Star, Moon } from 'lucide-react';
+
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
@@ -31,9 +33,19 @@ export default function ChatPage() {
 
     setMessages((prev) => [...prev, botMessage]);
   };
+return (
+  <div className="relative min-h-screen bg-[#fdf9f3] flex items-center justify-center p-4 overflow-hidden">
+   {/* ✨ Floating Lucide Background Doodles */}
+{/* 🌸 Floating Lucide Doodles (Cute + Visible) */}
+<div className="absolute inset-0 z-0 pointer-events-none">
+  <Sparkles className="absolute top-12 left-10 w-12 h-12 text-pink-300 opacity-60 animate-float" />
+  <Star className="absolute top-[40%] right-10 w-10 h-10 text-purple-300 opacity-50 animate-float-alt" />
+  <Heart className="absolute bottom-10 left-3 w-14 h-14 text-rose-300 opacity-60 animate-float-slow" />
+  <Moon className="absolute bottom-1 right-10 w-16 h-16 text-indigo-300 opacity-50 animate-float" />
+</div>
 
-   return (
-    <div className="min-h-screen bg-[#fdf9f3] flex items-center justify-center p-4">
+
+
       <div className="w-full max-w-2xl h-[70vh] rounded-3xl shadow-2xl border-2 border-[#f0e6d6] bg-white flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#f4d9c6] to-[#e3d7c9] p-4 text-center">
