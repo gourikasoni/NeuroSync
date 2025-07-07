@@ -23,23 +23,20 @@ export async function GET(req: Request) {
 
   for (const entry of data || []) {
     const date = new Date(entry.created_at).toISOString().split("T")[0]; // yyyy-mm-dd
+    const mood = entry.mood;
 
     if (!moodByDate[date]) moodByDate[date] = {};
-    moodByDate[date][entry.mood] = (moodByDate[date][entry.mood] || 0) + 1;
+    if (!moodByDate[date][mood]) moodByDate[date][mood] = 0;
+    moodByDate[date][mood]++;
   }
 
-  const result = Object.entries(moodByDate).map(([date, moodCounts]) => {
-    // Find most frequent mood for color
-    const sorted = Object.entries(moodCounts).sort((a, b) => b[1] - a[1]);
-    const mostFrequentMood = sorted[0][0];
+  const result = Object.entries(moodByDate).map(([date, moods]) => {
+    const mostFrequentMood = Object.entries(moods).reduce((a, b) => b[1] > a[1] ? b : a)[0];
 
     return {
       date,
-      count: Object.values(moodCounts).reduce((a, b) => a + b, 0),
-      mood: mostFrequentMood,
-      tooltip: Object.entries(moodCounts)
-        .map(([mood, count]) => `${mood}: ${count}`)
-        .join(", "),
+      moods,                // ✅ full mood breakdown
+      mostFrequentMood,     // ✅ used for color
     };
   });
 

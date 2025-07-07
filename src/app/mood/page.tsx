@@ -20,7 +20,8 @@ import {
 } from "recharts";
 
 import { supabase } from "@/lib/supabaseClient";
-
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
@@ -47,14 +48,12 @@ const MoodTrendsPage = () => {
     const fetchMoodData = async () => {
       if (!user) return;
       setLoading(true);
-const { data: entries } = await supabase
-  .from("journal_entries")
-  .select("created_at, ai_summary")
-  .eq("user_id", user.id);
-
-        const heatmap = getHeatmapData(entries || []);
-setHeatmapData(heatmap);
-
+      const { data: entries } = await supabase
+        .from("journal_entries")
+        .select("created_at, ai_summary")
+        .eq("user_id", user.id);
+//const legacyHeatmap = getHeatmapData(entries || []);
+    //  setHeatmapData(legacyHeatmap);
 
       const depth = getEmotionalDepth(entries || []);
       setDepthScore(depth);
@@ -82,16 +81,52 @@ setHeatmapData(heatmap);
         setArchetype(null);
       }
 
-      const res = await fetch("/api/mood-time-map");
-      const moodMap = await res.json();
-      setMoodTimeMap(moodMap);
+    // ✅ Mood Heatmap Data
+const res1 = await fetch(`/api/mood-heatmap?user_id=${user.id}`);
+const apiData = await res1.json();
+console.log("🔥 Mood Heatmap API Data:", apiData);
+
+
+const mappedHeatmap = apiData.map((item: any) => {
+  const moods: Record<string, number> = {}; // ✅ declare inside map callback
+
+  if (item.tooltip && typeof item.tooltip === "string") {
+    item.tooltip.split(", ").forEach((pair: string) => {
+      const [emoji, count] = pair.split(": ");
+      if (emoji && count) {
+        moods[emoji] = parseInt(count);
+      }
+    });
+  }
+
+  return {
+    date: item.date,
+    count: item.count,
+    mostFrequentMood: item.mood,
+    moods, // ✅ this is now scoped per object
+  };
+});
+
+
+setHeatmapData(mappedHeatmap);
+
+
+// ✅ Mood Time Map (Pie Chart)
+const res2 = await fetch("/api/mood-time-map");
+const moodMap = await res2.json();
+console.log("✅ Mood Time Map:", moodMap);
+setMoodTimeMap(moodMap);
+
+
 
       setLoading(false);
     };
 
     fetchMoodData();
   }, [user, range]);
-return loading ? (
+  console.log("📆 Final Heatmap Values:", heatmapData);
+
+  return loading ? (
     <div className="min-h-screen flex items-center justify-center text-[#815690]">
       Loading your vibes...
     </div>
@@ -114,10 +149,12 @@ return loading ? (
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="text-5xl font-extrabold bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-400 text-transparent bg-clip-text drop-shadow-lg"
-          >
-            💫 Here’s your vibe breakdown, bestie 💖
+            
+            className="text-4xl md:text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-[#815690] to-[#e5b5e7]"
+>
+             Here’s what your heart’s been saying lately 
           </motion.h1>
+          
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -134,21 +171,17 @@ return loading ? (
             transition={{ delay: 1, duration: 0.5 }}
             className="mt-4 flex justify-center gap-4"
           >
-            {["7d", "30d", "all"].map((option) => (
+            {['7d', '30d', 'all'].map((option) => (
               <button
                 key={option}
-                onClick={() => setRange(option as "7d" | "30d" | "all")}
+                onClick={() => setRange(option as '7d' | '30d' | 'all')}
                 className={`px-4 py-1 text-sm rounded-full border ${
                   range === option
-                    ? "bg-[#eecff7] border-[#ca89db] text-[#6c2a73]"
-                    : "bg-white/50 border-[#e7c6ed] text-[#b08bb9] hover:bg-[#f8e9ff]"
+                    ? 'bg-[#eecff7] border-[#ca89db] text-[#6c2a73]'
+                    : 'bg-white/50 border-[#e7c6ed] text-[#b08bb9] hover:bg-[#f8e9ff]'
                 } transition`}
               >
-                {option === "7d"
-                  ? "Last 7 days"
-                  : option === "30d"
-                  ? "Last 30 days"
-                  : "All time"}
+                {option === '7d' ? 'Last 7 days' : option === '30d' ? 'Last 30 days' : 'All time'}
               </button>
             ))}
           </motion.div>
@@ -210,7 +243,6 @@ return loading ? (
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Bar Chart */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -232,7 +264,6 @@ return loading ? (
             </ResponsiveContainer>
           </motion.div>
 
-          {/* Pie Chart */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -256,9 +287,7 @@ return loading ? (
                       <Cell
                         key={`cell-${index}`}
                         fill={
-                          ["#fcd34d", "#f9a8d4", "#c4b5fd", "#fdba74"][
-                            index % 4
-                          ]
+                          ["#fcd34d", "#f9a8d4", "#c4b5fd", "#fdba74"][index % 4]
                         }
                       />
                     ))}
@@ -300,23 +329,45 @@ return loading ? (
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="bg-white/50 border rounded-2xl p-6">
-  <h3 className="text-lg font-semibold mb-4">📅 Mood Calendar</h3>
-  <CalendarHeatmap
-    startDate={new Date(new Date().setMonth(new Date().getMonth() - 5))}
-    endDate={new Date()}
-    values={heatmapData}
-    classForValue={(value) => {
-      if (!value) return "color-empty";
-      if (value.count >= 4) return "color-scale-4";
-      if (value.count === 3) return "color-scale-3";
-      if (value.count === 2) return "color-scale-2";
-      return "color-scale-1";
-    }}
-    showWeekdayLabels
-  />
-</div>
 
+        {/* Mood Heatmap */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
+          className="bg-white/50 border rounded-2xl p-6"
+        >
+          <h3 className="text-lg font-semibold mb-4">📆 Mood Heatmap</h3>
+          <CalendarHeatmap
+  startDate={new Date(new Date().setMonth(new Date().getMonth() - 5))}
+  endDate={new Date()}
+  values={heatmapData}
+  showWeekdayLabels
+
+  tooltipDataAttrs={(value: any) => {
+    if (!value || !value.moods) return {};
+    const tooltipText = Object.entries(value.moods)
+      .map(([mood, count]) => `${mood}: ${count}`)
+      .join(', ');
+    return {
+      'data-tip': tooltipText,
+    } as React.HTMLAttributes<SVGElement>;
+  }}
+ classForValue={(value: any) => {
+  if (!value || !value.mostFrequentMood) return 'color-empty';
+
+  const mood = moodMeta.find((m) => m.emoji === value.mostFrequentMood);
+  if (!mood) return 'color-empty';
+
+  return `color-${mood.label.toLowerCase()}`;
+}}
+
+
+
+/>
+
+          <ReactTooltip className="!bg-[#fff0f6] !text-[#5f3a5d] !rounded-xl !px-3 !py-2 !text-xs !font-medium !shadow-xl" />
+        </motion.div>
       </div>
     </motion.main>
   );
