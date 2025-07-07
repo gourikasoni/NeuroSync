@@ -3,36 +3,67 @@
 import { useEffect, useRef, useState } from 'react';
 import ClientOnly from '@/components/ClientOnly';
 import { Heart, Sparkles, Star, Moon } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [input, setInput] = useState('');
   const chatRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
   useEffect(() => {
-    chatRef.current?.scrollTo({
-      top: chatRef.current.scrollHeight,
-      behavior: 'smooth',
-    });
-  }, [messages]);
+  const fetchMessages = async () => {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (!error && data) {
+      const loadedMessages = data.map((msg) => ({
+        role: msg.sender,
+        content: msg.message,
+      }));
+      setMessages(loadedMessages);
+    }
+  };
+
+  fetchMessages();
+}, []);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+  if (!input.trim()) return;
 
-    const userMessage = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+  const userMessage = { role: 'user', content: input };
+  setMessages((prev) => [...prev, userMessage]);
+  setInput('');
 
-    const res = await fetch('/api/chatbot', {
-      method: 'POST',
-      body: JSON.stringify({ userMessage: input }),
-    });
-    const data = await res.json();
-    const botMessage = { role: 'bot', content: data.reply };
+  // Save user message to Supabase
+  await supabase.from('chat_messages').insert({
+    message: input,
+    sender: 'user',
+  });
 
-    setMessages((prev) => [...prev, botMessage]);
-  };
+  const res = await fetch('/api/chatbot', {
+    method: 'POST',
+    body: JSON.stringify({ userMessage: input }),
+  });
+
+  const data = await res.json();
+  const botMessage = { role: 'bot', content: data.reply };
+
+  setMessages((prev) => [...prev, botMessage]);
+
+  // Save bot message to Supabase
+  await supabase.from('chat_messages').insert({
+    message: data.reply,
+    sender: 'bot',
+  });
+};
+
 return (
   <div className="relative min-h-screen bg-[#fdf9f3] flex items-center justify-center p-4 overflow-hidden">
    {/* ✨ Floating Lucide Background Doodles */}
@@ -54,6 +85,16 @@ return (
             Chat with Syna
             <span className="text-xl">✨</span>
           </h2>
+           {/* Clear Chat Button */}
+<div className="text-center mt-2">
+  <button
+    onClick={() => setMessages([])}
+    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#d6a4a4] hover:bg-[#c68888] rounded-full shadow-md transition duration-200"
+  >
+    🧹 Start New Chat
+  </button>
+</div>
+
         </div>
 
         {/* Message List */}
