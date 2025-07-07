@@ -91,7 +91,7 @@ export default function LandingPage() {
               <div className="space-y-4">
                      <Button
   className="group relative rounded-full px-8 py-5 text-base font-semibold text-[#646363] bg-gradient-to-r from-[#d6dfcb] to-[#8fad87] hover:from-[#8fad87] hover:to-[#d6dfcb] shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
-  onClick={() => router.push('/dashboard')}
+  onClick={() => router.push('/journal')}
 >
   <span className="flex items-center gap-2">
     Start Your Journey
