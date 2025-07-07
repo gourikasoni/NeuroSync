@@ -15,8 +15,8 @@ export default function LandingPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         
  {/* Responsive Floating Badge with Z-Index Fix */}
-<div className="absolute top-20 left-10 z-20 flex items-center gap-2 animate-bounce
-                max-sm:top-[90%] max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:flex-col max-sm:gap-1 max-sm:animate-none">
+<div className="absolute top-20 left-10 z-20 hidden sm:flex items-center gap-2 animate-bounce">
+
   <Heart className="w-6 h-6 text-[#f9c88f]" />
   <div className="bg-white/60 backdrop-blur-sm text-[#7c9f87] text-xs px-3 py-1 rounded-full border border-[#cde4d6] shadow-sm font-medium">
     Your Mental Wellness Journey
@@ -178,7 +178,7 @@ export default function LandingPage() {
 
       {/* Feature 4 */}
 <div className="bg-white rounded-2xl shadow-md border border-[#f0f0f0] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
-  <div className="text-xl font-semibold text-[#806783]">💬 Coming Soon</div>
+  <div className="text-xl font-semibold text-[#806783]">💬 Step 4:Talk It Through </div>
   <h3 className="text-lg font-semibold text-[#85a7ba]">AI Support Chat</h3>
   <p className="text-sm text-gray-500 leading-relaxed">
     A friendly chat assistant to guide your self-care. In the works!
