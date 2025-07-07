@@ -146,47 +146,82 @@ export default function LandingPage() {
     <h2 className="text-3xl sm:text-4xl font-bold text-[#67486e]">
   How NeuroSync Works ✨
 </h2>
-
 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left items-stretch">
-      
-      {/* Feature 1 */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#f5e7ef] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
-        <div className="text-xl font-semibold text-[#806783]">🧠 Step 1: Feel It</div>      
-        <h3 className="text-lg font-semibold text-[#b790be]">Mood Check-ins</h3>
-        <p className="text-sm text-gray-600 leading-relaxed">
-          Choose an emoji, rate your mood — even if you don’t know what you’re feeling yet.
-        </p>
-      </div>
 
-      {/* Feature 2 */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#e1f1ed] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
-        <div className="text-xl font-semibold text-[#806783]">🎙 Step 2: Let It Out</div>
-        <h3 className="text-lg font-semibold text-[#9ac6b5]">Voice Journaling</h3>
-        <p className="text-sm text-gray-600 leading-relaxed">
-          Too tired to type? Just talk. We'll transcribe your chaos into calm.
-        </p>
-      </div>
+  {/* Step 1 */}
+  <div className="bg-white rounded-2xl shadow-md border border-[#f5e7ef] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+    <div className="text-xl font-semibold text-[#806783]">🧠 Step 1: Feel It</div>
+    <h3 className="text-lg font-semibold text-[#b790be]">Mood Check-ins & Journaling</h3>
+    <p className="text-sm text-gray-600 leading-relaxed">
+      Choose an emoji, rate your mood — then write or speak your thoughts. Whether it’s a whisper or a rant, let it out.
+    </p>
+    <div className="mt-3 p-2 bg-gradient-to-br from-[#f8e7f5] to-[#fdf9f3] rounded-xl shadow-inner">
+      <Image 
+        src="/card1.png" 
+        alt="Mood and Journaling" 
+        width={600} 
+        height={300} 
+        className="rounded-lg w-full object-cover border border-[#e2cce0] drop-shadow-md hover:drop-shadow-2xl"
+      />
+    </div>
+  </div>
 
-      {/* Feature 3 */}
-      <div className="bg-white rounded-2xl shadow-md border border-[#fbe4e4] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
-        <div className="text-xl font-semibold text-[#806783]">🤖 Step 3: Reflect</div>
-        <h3 className="text-lg font-semibold text-[#f9c88f]">AI Feedback</h3>
-        <p className="text-sm text-gray-600 leading-relaxed">
-          Our AI gently reads between the lines to spot patterns, stress, and more.
-        </p>
-      </div>
+  {/* Step 2 */}
+  <div className="bg-white rounded-2xl shadow-md border border-[#e1f1ed] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+    <div className="text-xl font-semibold text-[#806783]">📊 Step 2: See It Clearly</div>
+    <h3 className="text-lg font-semibold text-[#9ac6b5]">AI Summary</h3>
+    <p className="text-sm text-gray-600 leading-relaxed">
+      Our AI gently distills your entries into short summaries — spotlighting recurring themes, emotions, and patterns.
+    </p>
+    <div className="mt-3 p-2 bg-gradient-to-br from-[#d6f4ec] to-[#f5fffb] rounded-xl shadow-inner">
+      <Image 
+        src="/card2.png" 
+        alt="AI Summary" 
+        width={600} 
+        height={300} 
+        className="rounded-lg w-full object-cover border border-[#bee5db] drop-shadow-md hover:drop-shadow-2xl"
+      />
+    </div>
+  </div>
 
-      {/* Feature 4 */}
-<div className="bg-white rounded-2xl shadow-md border border-[#f0f0f0] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
-  <div className="text-xl font-semibold text-[#806783]">💬 Step 4:Talk It Through </div>
-  <h3 className="text-lg font-semibold text-[#85a7ba]">AI Support Chat</h3>
-  <p className="text-sm text-gray-500 leading-relaxed">
-    A friendly chat assistant to guide your self-care. In the works!
-  </p>
+  {/* Step 3 */}
+  <div className="bg-white rounded-2xl shadow-md border border-[#fbe4e4] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+    <div className="text-xl font-semibold text-[#806783]">📈 Step 3: Understand It</div>
+    <h3 className="text-lg font-semibold text-[#f9c88f]">Mood Insights Over Time</h3>
+    <p className="text-sm text-gray-600 leading-relaxed">
+      Visualize how your mood evolves with time — through graphs, trends, and gentle nudges toward self-awareness.
+    </p>
+    <div className="mt-3 p-2 bg-gradient-to-br from-[#ffe6e6] to-[#fffafa] rounded-xl shadow-inner">
+      <Image 
+        src="/card3.png" 
+        alt="Mood Insights" 
+        width={600} 
+        height={300} 
+        className="rounded-lg w-full object-cover border border-[#f9dada] drop-shadow-md hover:drop-shadow-2xl"
+      />
+    </div>
+  </div>
+
+  {/* Step 4 */}
+  <div className="bg-white rounded-2xl shadow-md border border-[#f0f0f0] p-6 space-y-4 transform hover:scale-[1.02] hover:shadow-xl transition duration-300">
+    <div className="text-xl font-semibold text-[#806783]">💬 Step 4: Talk It Through</div>
+    <h3 className="text-lg font-semibold text-[#85a7ba]">AI Support Chat</h3>
+    <p className="text-sm text-gray-600 leading-relaxed">
+      Chat with your AI companion — always here to listen, reflect, or guide you through your thoughts in real time.
+    </p>
+    <div className="mt-3 p-2 bg-gradient-to-br from-[#e5f4f9] to-[#fafdff] rounded-xl shadow-inner">
+      <Image 
+        src="/card4.png" 
+        alt="AI Support Chat" 
+        width={600} 
+        height={300} 
+        className="rounded-lg w-full object-cover border border-[#cfe8f3]drop-shadow-md hover:drop-shadow-2xl"
+      />
+    </div>
+  </div>
+
 </div>
 
-
-    </div>
   </div>
 </section>
 
