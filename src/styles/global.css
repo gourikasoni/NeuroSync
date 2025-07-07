@@ -154,3 +154,19 @@
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out forwards;
 }
+
+.color-empty {
+  fill: #f3e8ff;
+}
+.color-scale-1 {
+  fill: #e9d5ff;
+}
+.color-scale-2 {
+  fill: #d8b4fe;
+}
+.color-scale-3 {
+  fill: #c084fc;
+}
+.color-scale-4 {
+  fill: #a855f7;
+}
